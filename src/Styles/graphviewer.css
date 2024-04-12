@@ -1,7 +1,10 @@
-/*
- * Empty Stylesheet file.
- */
+#TXT {
+    
+    -fx-background-radius: 0;
+    -fx-background-color: rgba(192, 192, 192, 0.5);
+    -fx-font-weight: bold;
+}
 
-.mainFxmlClass {
-
+#hbx {
+    -fx-background-color: rgba(192, 192, 192, 0.5);
 }
