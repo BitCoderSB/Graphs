@@ -8,3 +8,14 @@
 #hbx {
     -fx-background-color: rgba(192, 192, 192, 0.5);
 }
+
+
+.myClass {
+    -fx-fill: red;
+}
+
+.classLabel {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+}

@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javafx.geometry.Point2D;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Circle;
 
 /**
  *
@@ -28,7 +30,7 @@ public class Graph {
     }
     
 
-    public boolean addVertex(String name){
+    public boolean addVertex(String name, double x, double y){
 
         Set<Vertex> keys = listAbj.keySet();
         
@@ -38,17 +40,17 @@ public class Graph {
             }
         }
 
-        Vertex v = new Vertex(name);
+        Vertex v = new Vertex(name, x, y);
 
         listAbj.put(v, new ArrayList<Edge>());
 
         return true;
     }
 
-    public void addVertex(){
+    public void addVertex(double x, double y){
         int num = listAbj.size() + 1;
 
-        Vertex v = new Vertex("" + num);
+        Vertex v = new Vertex("" + num, x, y);
 
         listAbj.put(v, new ArrayList<Edge>());
     }
@@ -111,4 +113,41 @@ public class Graph {
 
     }
     
+    
+    public Vertex isPointInsideCircle(Double x, Double y){
+        
+        Set<Vertex> keys = listAbj.keySet();
+        
+        for(Vertex v: keys){
+            
+            Circle circle = v.getCircle();
+            
+            double centerX = circle.getCenterX();
+            double centerY = circle.getCenterY();
+            double radius = circle.getRadius();
+            
+            double distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+            
+            if(distance <= radius){
+                
+                return v;
+                
+            }
+        }
+        
+        return null;
+    }
+    
+    public void paint(AnchorPane pane){
+        
+        Set<Vertex> keys = listAbj.keySet();
+        
+        for(Vertex v: keys){
+            v.unpaint(pane);
+        }
+        
+        for(Vertex v: keys){
+            v.paint(pane);
+        }
+    }
 }
