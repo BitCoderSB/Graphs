@@ -4,9 +4,11 @@
  */
 package Controllers;
 
+import Data.Vertex;
 import Logic.Graph;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -21,6 +23,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
 /**
@@ -52,16 +55,21 @@ public class GraphViewerController implements Initializable {
     private TextField TXT;
     
     public Graph g;
-
+    
+    
+    private double lastX;
+    private double lastY;
+    private boolean move;
+    private Vertex moveV;
     /**
      * Initializes the controller class.
      */
-    @Override
+    
     public void initialize(URL url, ResourceBundle rb) {
-        
+        moveV = null;
+        move = false;
         BorderPane borderPane = new BorderPane();
         borderPane.setBottom(hbx);
-        //borderPane.setPadding(new Insets(5));
     
         hbx.setAlignment(Pos.CENTER); // Alineación central
         hbx.setSpacing(10);
@@ -78,39 +86,91 @@ public class GraphViewerController implements Initializable {
     }
 
     @FXML
-    private void pressed(MouseEvent event) {
-        n();
+    private void paneClick(MouseEvent event) {
         
         double x = event.getX();
         double y = event.getY();
         
-        Point2D p = new Point2D(x,y);
+        Vertex existingVertex = g.isPointInsideCircle(x, y);
         
-        System.out.println("X = " + p.getX() + "  Y = " + p.getY());
+        if(existingVertex == null){
+            g.addVertex(x, y);
+        }
+        
+        g.paint(panel);
     }
     
-    public void n(){
+    
+    
+    
+    
+    // Move vertex
+    
+
+    @FXML
+    private void panePreseed(MouseEvent event) {
         
-        g.addVertex("A");
-        g.addVertex("B");
-        g.addVertex("C");
-        g.addVertex("D");
-        g.addVertex("E");
-        g.addVertex("F");
-        g.addVertex("G");
+        double x = event.getX();
+        double y = event.getY();
+        
+        moveV = g.isPointInsideCircle(x, y);
+        if(moveV != null){
+            lastX = x;
+            lastY = y;
+            
+            move = true;
+        }
+    }
 
-        g.addEdge("A", "B", 4.0);
-        g.addEdge("A", "D", 3);
-        g.addEdge("B", "D", 2);
-        g.addEdge("B", "E", 5);
-        g.addEdge("D", "G", 2);
-        g.addEdge("D", "F", 1);
-        g.addEdge("D", "C", 2);
-        g.addEdge("E", "G", 3);
+    @FXML
+    private void paneReleased(MouseEvent event) {
+        move = false;
+    }
 
-        g.printList();
+    @FXML
+    private void paneDragged(MouseEvent event) {
+       
+        double x = event.getX();
+        double y = event.getY();
+        
+        if(move){
+            
+            Circle aux = moveV.getCircle();
+            double deltaX = x - lastX;
+            double deltaY = y - lastY;
+            
+            aux.setCenterX(aux.getCenterX() + deltaX);
+            aux.setCenterY(aux.getCenterY() + deltaY);
+            
+            lastX = x;
+            lastY = y;
+            
+            moveV.setCircle(aux);
+            
+            g.paint(panel);
+            
+        }
         
         
     }
       
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
