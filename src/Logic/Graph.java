@@ -84,7 +84,7 @@ public class Graph {
             }
         }
 
-        Edge e = new Edge(End, weight);
+        Edge e = new Edge(End, weight, Star.getCircle().getCenterX(), Star.getCircle().getCenterY());
 
         aux.add(e);
 
@@ -144,10 +144,39 @@ public class Graph {
         
         for(Vertex v: keys){
             v.unpaint(pane);
+            
+            List<Edge> aux = new ArrayList<>();
+            
+            aux = listAbj.get(v);
+            
+            for(Edge e: aux){
+                e.unpaint(pane);
+            }
         }
+        
+        
+        for(Vertex v: keys){
+            List<Edge> aux = new ArrayList<>();
+            
+            aux = listAbj.get(v);
+            
+            for(Edge e: aux){
+                e.paint(pane);
+            }
+        }
+        
         
         for(Vertex v: keys){
             v.paint(pane);
         }
+        
     }
+
+    public Map<Vertex, List<Edge>> getListAbj() {
+        return listAbj;
+    }
+
+    
+    
+    
 }
