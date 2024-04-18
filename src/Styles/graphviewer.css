@@ -19,3 +19,20 @@
     -fx-font-weight: bold;
     -fx-text-fill: black;
 }
+
+.myLine {
+    
+    -fx-stroke: black;
+    -fx-stroke-width: 3px;
+    
+}
+
+.edgeLabel {
+    
+    
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: red;
+    
+    
+}

@@ -5,6 +5,9 @@
 package Data;
 
 import javafx.geometry.Point2D;
+import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Line;
 
 /**
  *
@@ -14,9 +17,17 @@ public class Edge {
     
     private Vertex target;
     private double weight;
+    private Line line;
+    private Label title;
 
-    public Edge(Vertex target, double weight) {
-
+    public Edge(Vertex target, double weight, double x, double y) {
+        
+        
+        title = new Label("" + weight);
+        title.getStyleClass().add("edgeLabel");
+        
+        line = new Line(x, y, target.getCircle().getCenterX(), target.getCircle().getCenterY());
+        line.getStyleClass().add("myLine");
         this.target = target;
         this.weight = weight;
 
@@ -45,5 +56,36 @@ public class Edge {
     }
     
     
+    public void setCoordinates(double x, double y){
+        
+        line.setStartX(x);
+        line.setStartY(y);
+        line.setEndX(target.getCircle().getCenterX());
+        line.setEndY(target.getCircle().getCenterY());
+        
+    }
+    
+    public void paint(AnchorPane pane){
+        
+        title.setLayoutX((double) ((line.getStartX() + line.getEndX()) / 2));
+        title.setLayoutY((double) (( line.getStartY() + line.getEndY()) / 2) - 30);
+        
+        pane.getChildren().add(line);
+        pane.getChildren().add(title);
+        
+    }
+    
+    public void unpaint(AnchorPane pane){
+        pane.getChildren().remove(title);
+        pane.getChildren().remove(line);
+        
+    }
+    
 
 }
+
+
+
+
+
+

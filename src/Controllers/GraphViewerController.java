@@ -4,19 +4,27 @@
  */
 package Controllers;
 
+import Data.Edge;
 import Data.Vertex;
 import Logic.Graph;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.Scanner;
+import java.util.Set;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -56,11 +64,23 @@ public class GraphViewerController implements Initializable {
     
     public Graph g;
     
-    
+    // Vertex
+    private boolean VertexR;
     private double lastX;
     private double lastY;
     private boolean move;
     private Vertex moveV;
+    
+    
+    
+    // Edge
+    
+    private boolean starEdge;
+    private Vertex Star;
+    private Vertex End;
+    @FXML
+    private CheckBox checkV;
+    
     /**
      * Initializes the controller class.
      */
@@ -68,6 +88,13 @@ public class GraphViewerController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         moveV = null;
         move = false;
+        VertexR = false;
+        
+        starEdge = false;
+        Star = null;
+        End = null;
+        
+        
         BorderPane borderPane = new BorderPane();
         borderPane.setBottom(hbx);
     
@@ -84,20 +111,31 @@ public class GraphViewerController implements Initializable {
         
         g = new Graph();
     }
+    
+    @FXML
+    private void checkBoxV(ActionEvent event) {
+        VertexR = checkV.isSelected();
+        
+    }
+
 
     @FXML
     private void paneClick(MouseEvent event) {
         
-        double x = event.getX();
-        double y = event.getY();
         
-        Vertex existingVertex = g.isPointInsideCircle(x, y);
+        if(event.getClickCount() == 2){
+            double x = event.getX();
+            double y = event.getY();
         
-        if(existingVertex == null){
-            g.addVertex(x, y);
+            Vertex existingVertex = g.isPointInsideCircle(x, y);
+        
+            if(existingVertex == null){
+                g.addVertex(x, y);
+            }
+        
+            g.paint(panel);
         }
-        
-        g.paint(panel);
+
     }
     
     
@@ -114,17 +152,48 @@ public class GraphViewerController implements Initializable {
         double y = event.getY();
         
         moveV = g.isPointInsideCircle(x, y);
-        if(moveV != null){
+        if(moveV != null && VertexR){
             lastX = x;
             lastY = y;
             
             move = true;
         }
+        
+        Star = moveV;
+        
+        if(!VertexR && Star != null){
+            
+            starEdge = true;
+            
+        }
     }
 
     @FXML
     private void paneReleased(MouseEvent event) {
+        
+        double x = event.getX();
+        double y = event.getY();
+        
         move = false;
+        
+        End = g.isPointInsideCircle(x , y);
+        
+        if( End != null && starEdge){
+            
+            Random random = new Random();
+            
+            int randomNumber = random.nextInt();
+            
+            randomNumber = Math.abs(randomNumber % 20);
+            
+            
+            System.out.println("=====================================================================");
+            System.out.println(g.addEdge(Star.getName(), End.getName(), randomNumber));
+            g.printList();
+            System.out.println("=====================================================================");
+            starEdge = false;
+            g.paint(panel);
+        }
     }
 
     @FXML
@@ -134,6 +203,31 @@ public class GraphViewerController implements Initializable {
         double y = event.getY();
         
         if(move){
+            
+            Map<Vertex, List<Edge>> aux1 = g.getListAbj();
+            
+            Set<Vertex> keys = aux1.keySet();
+            
+            for(Vertex v: keys){
+                
+                List<Edge> edges = new ArrayList<>();
+                edges = aux1.get(v);
+                
+                if(!v.getName().equals(moveV.getName())){
+                    
+                    for(Edge e: edges){
+                        e.setCoordinates(v.getCircle().getCenterX(), v.getCircle().getCenterY());
+                    }
+                    
+                }else{
+                    
+                    for(Edge e: edges){
+                        e.setCoordinates(moveV.getCircle().getCenterX(), moveV.getCircle().getCenterY());
+                    }
+                }
+            
+            }
+            
             
             Circle aux = moveV.getCircle();
             double deltaX = x - lastX;
@@ -146,29 +240,13 @@ public class GraphViewerController implements Initializable {
             lastY = y;
             
             moveV.setCircle(aux);
-            
+           
             g.paint(panel);
             
         }
         
         
     }
-      
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     
