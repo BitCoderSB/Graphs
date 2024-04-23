@@ -32,6 +32,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 
 /**
@@ -64,6 +66,7 @@ public class GraphViewerController implements Initializable {
     
     public Graph g;
     
+    
     // Vertex
     private boolean VertexR;
     private double lastX;
@@ -75,17 +78,28 @@ public class GraphViewerController implements Initializable {
     
     // Edge
     
+    private Line line;
+    private Polygon Triangle;
     private boolean starEdge;
     private Vertex Star;
     private Vertex End;
+    
+    
     @FXML
     private CheckBox checkV;
+    
+    
     
     /**
      * Initializes the controller class.
      */
     
     public void initialize(URL url, ResourceBundle rb) {
+    
+        line = new Line();
+        line.getStyleClass().add("myLine");
+        Triangle = new Polygon(100.0, 100.0, 200.0, 200.0, 50.0, 200.0);
+        
         moveV = null;
         move = false;
         VertexR = false;
@@ -98,7 +112,7 @@ public class GraphViewerController implements Initializable {
         BorderPane borderPane = new BorderPane();
         borderPane.setBottom(hbx);
     
-        hbx.setAlignment(Pos.CENTER); // Alineación central
+        hbx.setAlignment(Pos.CENTER);
         hbx.setSpacing(10);
         
         panel.getChildren().add(borderPane);
@@ -115,7 +129,6 @@ public class GraphViewerController implements Initializable {
     @FXML
     private void checkBoxV(ActionEvent event) {
         VertexR = checkV.isSelected();
-        
     }
 
 
@@ -151,6 +164,8 @@ public class GraphViewerController implements Initializable {
         double x = event.getX();
         double y = event.getY();
         
+        
+        // Function move vertex
         moveV = g.isPointInsideCircle(x, y);
         if(moveV != null && VertexR){
             lastX = x;
@@ -159,8 +174,8 @@ public class GraphViewerController implements Initializable {
             move = true;
         }
         
+        // Function add edge
         Star = moveV;
-        
         if(!VertexR && Star != null){
             
             starEdge = true;
@@ -171,6 +186,10 @@ public class GraphViewerController implements Initializable {
     @FXML
     private void paneReleased(MouseEvent event) {
         
+        System.out.println("Tonto");
+        panel.getChildren().remove(line);
+        panel.getChildren().remove(Triangle);
+
         double x = event.getX();
         double y = event.getY();
         
@@ -240,8 +259,105 @@ public class GraphViewerController implements Initializable {
             lastY = y;
             
             moveV.setCircle(aux);
-           
+            
             g.paint(panel);
+        }
+        
+        if(starEdge && moveV != null){
+            
+            panel.getChildren().remove(line);
+            panel.getChildren().remove(Triangle);
+            
+            Triangle.getPoints().clear();
+            
+            // Line
+            
+            double xp;
+            double yp;
+            
+            xp = x - moveV.getCircle().getCenterX();
+            yp = y - moveV.getCircle().getCenterY();
+            
+            double magnitud = Math.sqrt(xp * xp + yp * yp);
+            
+            xp = xp / magnitud;
+            yp = yp / magnitud;
+            
+            xp = xp * moveV.getCircle().getRadius();
+            yp = yp * moveV.getCircle().getRadius();
+            
+            xp += moveV.getCircle().getCenterX();
+            yp += moveV.getCircle().getCenterY();
+            
+            line.setStartX(xp);
+            line.setStartY(yp);
+            
+            
+            
+            // Triangule
+            
+            double size = 20;
+            double height = Math.sqrt(size * size - (size / 2) * (size / 2));
+            
+            
+            xp = moveV.getCircle().getCenterX() - x;
+            yp = moveV.getCircle().getCenterY() - y;
+            
+            xp = xp / magnitud;
+            yp = yp / magnitud;
+            
+            line.setEndX((xp * (height / 2)) + x);
+            line.setEndY((yp * (height / 2)) + y);
+            
+            xp = xp * height;
+            yp = yp * height;
+            
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+            double x1 = -yp;
+            double y1 = xp;
+            
+            double magnitud2 = Math.sqrt(x1* x1 + y1 * y1);
+            
+            double x2 = yp;
+            double y2 = -xp;
+            
+            x1 = x1 / magnitud2;
+            y1 = y1 / magnitud2;
+            
+            x2 = x2 / magnitud2;
+            y2 = y2 / magnitud2;
+            
+            x1 = x1 * (size / 2);
+            y1 = y1 * (size / 2);
+            
+            x2 = x2 * (size / 2);
+            y2 = y2 * (size / 2);
+            
+            
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////
+            xp = xp + x;
+            yp = yp + y;
+            
+            x1 = x1 + xp;
+            y1 = y1 + yp;
+            
+            x2 = x2 + xp;
+            y2 = y2 + yp;
+
+            
+            Triangle.getPoints().add(x1);
+            Triangle.getPoints().add(y1);
+            
+            Triangle.getPoints().add(x2);
+            Triangle.getPoints().add(y2);
+            
+            Triangle.getPoints().add(x);
+            Triangle.getPoints().add(y);
+            
+            panel.getChildren().add(line);
+            panel.getChildren().add(Triangle);
+            
             
         }
         
